@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eoux pipefail
+set -e
 
 FACTORIO_VOL=/factorio
 LOAD_LATEST_SAVE="${LOAD_LATEST_SAVE:-true}"
@@ -10,8 +10,6 @@ mkdir -p "$FACTORIO_VOL"
 mkdir -p "$SAVES"
 mkdir -p "$CONFIG"
 mkdir -p "$MODS"
-mkdir -p "$SCENARIOS"
-mkdir -p "$SCRIPTOUTPUT"
 
 if [[ ! -f $CONFIG/rconpw ]]; then
   # Generate a new RCON password if none exists
@@ -35,10 +33,6 @@ NRTMPSAVES=$( find -L "$SAVES" -iname \*.tmp.zip -mindepth 1 | wc -l )
 if [[ $NRTMPSAVES -gt 0 ]]; then
   # Delete incomplete saves (such as after a forced exit)
   rm -f "$SAVES"/*.tmp.zip
-fi
-
-if [[ ${UPDATE_MODS_ON_START:-} == "true" ]]; then
-  ./docker-update-mods.sh
 fi
 
 if [[ $(id -u) = 0 ]]; then
@@ -95,4 +89,4 @@ else
 fi
 
 # shellcheck disable=SC2086
-exec $SU_EXEC /opt/factorio/bin/x64/factorio "${FLAGS[@]}" "$@"
+exec /opt/factorio/bin/x64/factorio "${FLAGS[@]}" "$@"
